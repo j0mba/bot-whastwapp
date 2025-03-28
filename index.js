@@ -1,37 +1,32 @@
 const { Client, LocalAuth } = require("whatsapp-web.js");
 const qrcode = require("qrcode-terminal");
 
-// Configuração do cliente com autenticação persistente
 const client = new Client({
-  authStrategy: new LocalAuth(), // Salva a sessão localmente
-  puppeteer: { headless: true }, // Executa o navegador em modo invisível
+    authStrategy: new LocalAuth(),
+    puppeteer: {
+        headless: true,
+        args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    },
 });
 
-// Exibe o QR code no terminal para autenticação
 client.on("qr", (qr) => {
-  qrcode.generate(qr, { small: true });
-  console.log("Escaneie o QR code com o WhatsApp.");
+    qrcode.generate(qr, { small: true });
+    console.log("QR Code gerado. Escaneie-o nos logs do Render:");
+    console.log(qr); // Exibe o QR como texto nos logs
 });
 
-// Quando o cliente estiver pronto
 client.on("ready", () => {
-  console.log("Bot está pronto!");
-
-  // Número de destino no formato internacional
-  const number = "558132176990";
-  const chatId = `${number}@c.us`; // Formato exigido pelo whatsapp-web.js
-
-  // Envia a mensagem "oi"
-  client
-    .sendMessage(chatId, "oi")
-    .then(() => console.log('Mensagem "oi" enviada com sucesso!'))
-    .catch((err) => console.error("Erro ao enviar mensagem:", err));
+    console.log("Bot está pronto!");
+    const number = "5581998950305";
+    const chatId = `${number}@c.us`;
+    client
+        .sendMessage(chatId, "oi")
+        .then(() => console.log('Mensagem "oi" enviada com sucesso!'))
+        .catch((err) => console.error("Erro ao enviar mensagem:", err));
 });
 
-// Inicializa o cliente
-client.initialize();
-
-// Tratamento de erros
 client.on("disconnected", (reason) => {
-  console.log("Desconectado:", reason);
+    console.log("Desconectado:", reason);
 });
+
+client.initialize();
